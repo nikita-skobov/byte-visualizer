@@ -1,0 +1,8 @@
+[package]
+name = "byte-visualizer"
+version = "0.1.0"
+authors = ["nikita-skobov"]
+edition = "2018"
+
+[dependencies]
+png_encode_mini = "0.1.2"
