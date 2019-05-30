@@ -36,14 +36,55 @@ impl Sprite {
             println!("WARNING: setting pixel data with a length of {} but the sprite only has room for {}", data_len, self.pixel_data_max_len);
         }
 
+        self.pixel_data.resize(self.pixel_data_max_len as usize, self.pixel_data[0]);
+
         for i in 0..self.pixel_data_max_len {
             if i == data_len {
                 // in case user provides a data with length smaller than pixel_data_max_len
                 // make sure to break here to prevent accessing elements that don't exist
-                break
+                break;
             }
 
-            self.pixel_data.push(data[i as usize]);
+            let index: usize = i as usize;
+            self.pixel_data[index] = data[index];
         }
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn new_works() {
+        super::Sprite::new(1, 1, 10, 10, 0);
+    }
+
+    #[test]
+    fn only_has_one_pixel_value() {
+        let my_sprite = super::Sprite::new(20, 20, 10, 10, 100);
+        assert_eq!(my_sprite.pixel_data.len(), 1);
+    }
+
+    #[test]
+    fn set_pixel_data_doesnt_error_if_data_is_larger_than_pixel_data_max_len() {
+        let mut my_sprite = super::Sprite::new(0, 0, 1, 1, 29);
+
+        my_sprite.set_pixel_data(&vec![0; 5]);
+        // width * height * values_per_pixel = 1 * 1 * 4 = 4
+        // we are setting pixel data with a vector of 5 elements, whereas
+        // the pixel_data_max_len is 4
+    }
+
+    #[test]
+    fn set_pixel_data_sets_len_to_max() {
+        let mut my_sprite = super::Sprite::new(0, 0, 3, 2, 29);
+        assert_eq!(my_sprite.pixel_data.len(), 1);
+        // max len = 3 * 2 * 4 = 24
+
+        my_sprite.set_pixel_data(&vec![0; 10]);
+        // set pixel data should resize the vector
+        // to be of length 24 even though we are only passing
+        // a vector of length 10
+        assert_eq!(my_sprite.pixel_data.len(), 24);
     }
 }
