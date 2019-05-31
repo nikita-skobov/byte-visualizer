@@ -67,3 +67,85 @@ pub fn get_image_data(
 
     image_data
 }
+
+
+pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, height: i32) -> Vec<u8> {
+    let num_pixels = width * height;
+    let vector_size = num_pixels * super::colors::VALUES_PER_PIXEL;
+    let mut image_data: Vec<u8> = vec![0; vector_size as usize];
+
+
+    for sprite in sprite_vec {
+        let num_pixels_in_sprite: i32 = sprite.pixel_data.len() as i32;
+        let first_pixel_color = sprite.pixel_data[0].clone();
+
+        let mut height_level = height - sprite.y_offset - 1;
+        // - 1 because we want it to be 0 indexed
+        let mut height_offset = height_level * width;
+        
+        for i in 0..sprite.pixel_data_max_len {
+            let pixel_color: &super::colors::Color = if i > num_pixels_in_sprite { &sprite.pixel_data[0] } else { &first_pixel_color };
+            // if user wants entire sprite to be a single colored square they can just supply one color
+            // which would be first_pixel_color. otherwise if they ever call set_pixel_data, then
+            // sprite.pixel_data.len() becomes set to sprite.pixel_data_max_len
+
+            let width_offset = i % sprite.width;
+            let width_index = sprite.x_offset + width_offset;
+
+
+            if i > 0 && width_offset == 0 {
+                height_level -= 1;
+                // every time i surpasses the width, we decrease the
+                // height level by 1
+                height_offset = height_level * width;
+                // recalculate height offset only when height level changes
+            }
+
+
+            if height_level < 0 || height_level >= height {
+                // height level must be less than image height and non negative
+                // otherwise pixel out of bounds, so skip it.
+                continue;
+            }
+            if width_index < 0 || width_index >= width {
+                // width index must be greater than 0, and less than img_width
+                // otherwise the current pixel of the sprite is out of bounds,
+                //and therefor we dont modify the image data for this pixel
+                continue;
+            }
+
+            let pixel_index = height_offset + width_index;
+            let pixel_index = pixel_index * super::colors::VALUES_PER_PIXEL;
+            let pixel_index: usize = pixel_index as usize;
+
+            let bottom_pixel = (
+                image_data[pixel_index],
+                image_data[pixel_index + 1],
+                image_data[pixel_index + 2],
+                image_data[pixel_index + 3],
+            );
+
+            let top_pixel = (
+                pixel_color.red,
+                pixel_color.green,
+                pixel_color.blue,
+                pixel_color.alpha,
+            );
+
+            let (
+                new_red,
+                new_green,
+                new_blue,
+                new_alpha,
+            ) = super::colors::Color::get_blended_pixel_tuple(bottom_pixel, top_pixel);
+
+            image_data[pixel_index] = new_red;
+            image_data[pixel_index + 1] = new_green;
+            image_data[pixel_index + 2] = new_blue;
+            image_data[pixel_index + 3] = new_alpha;
+        }
+    }
+
+
+    image_data
+}
