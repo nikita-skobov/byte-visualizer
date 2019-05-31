@@ -70,8 +70,8 @@ pub fn get_image_data(
 
 
 pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, height: i32) -> Vec<u8> {
-    let num_pixels = width * height;
-    let vector_size = num_pixels * super::pixels::VALUES_PER_PIXEL;
+    let num_pixels: i128 = width as i128 * height as i128;
+    let vector_size = num_pixels * super::pixels::VALUES_PER_PIXEL as i128;
     let mut image_data: Vec<u8> = vec![0; vector_size as usize];
 
 
