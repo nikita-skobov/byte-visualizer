@@ -17,6 +17,16 @@ impl Color {
     }
 
     pub fn get_blended_pixel_tuple(pix1: (u8, u8, u8, u8), pix2: (u8, u8, u8, u8)) -> (u8, u8, u8, u8) {
+        if pix2.3 == 255 {
+            // the top pixel is opaque, no need to calculate blends,
+            // simply override the bottom pixel
+            return pix2;
+        } else if pix1.3 == 0 {
+            // the bottom pixel is completely transparent
+            // no need to calculate blends eiter. simply return the top pixel
+            return pix2;
+        }
+        
         let pix2_alpha_f: f32 = pix2.3 as f32 / 255.0;
         let pix1_alpha_f: f32 = pix1.3 as f32 / 255.0;
         let alpha_inverse = 1f32 - pix2_alpha_f;
@@ -31,6 +41,16 @@ impl Color {
     }
 
     pub fn get_blended_pixel(bottom: Color, top: Color) -> Color {
+        if top.alpha == 255 {
+            // the top pixel is opaque, no need to calculate blends,
+            // simply override the bottom pixel
+            return top;
+        } else if bottom.alpha == 0 {
+            // the bottom pixel is completely transparent
+            // no need to calculate blends eiter. simply return the top pixel
+            return top;
+        }
+
         let top_alpha_f: f32 = top.alpha as f32 / 255.0;
         let bottom_alpha_f: f32 = bottom.alpha as f32 / 255.0;
         let alpha_inverse = 1f32 - top_alpha_f;
