@@ -1,14 +1,14 @@
 #[derive(Clone, Debug)]
-pub struct Color {
+pub struct Pixel {
     pub red: u8,
     pub green: u8,
     pub blue: u8,
     pub alpha: u8,
 }
 
-impl Color {
-    pub fn new(red: u8, green: u8, blue: u8, alpha: u8) -> Color {
-        Color {
+impl Pixel {
+    pub fn new(red: u8, green: u8, blue: u8, alpha: u8) -> Pixel {
+        Pixel {
             red,
             green,
             blue,
@@ -40,7 +40,7 @@ impl Color {
         (red, green, blue, alpha)
     }
 
-    pub fn get_blended_pixel(bottom: Color, top: Color) -> Color {
+    pub fn get_blended_pixel(bottom: Pixel, top: Pixel) -> Pixel {
         if top.alpha == 255 {
             // the top pixel is opaque, no need to calculate blends,
             // simply override the bottom pixel
@@ -61,7 +61,7 @@ impl Color {
         let blue = (((alpha_inverse * bottom_alpha_f * bottom.blue as f32) + (top_alpha_f * top.blue as f32)) / output_alpha) as u8;
         let alpha = (output_alpha * 255.0) as u8;
 
-        Color {
+        Pixel {
             red,
             green,
             blue,

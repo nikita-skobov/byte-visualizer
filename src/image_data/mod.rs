@@ -1,5 +1,5 @@
 mod get_image_data;
-mod colors;
+mod pixels;
 
 pub use get_image_data::get_image_data;
 
@@ -8,12 +8,12 @@ pub struct Sprite {
     y_offset: i32,
     width: i32,
     height: i32,
-    pixel_data: Vec<colors::Color>,
+    pixel_data: Vec<pixels::Pixel>,
     pixel_data_max_len: i32,
 }
 
 impl Sprite {
-    pub fn new(x_offset: i32, y_offset: i32, width: i32, height: i32, color: &colors::Color) -> Sprite {
+    pub fn new(x_offset: i32, y_offset: i32, width: i32, height: i32, color: &pixels::Pixel) -> Sprite {
         let pixel_data = vec![color.clone()];
         // make a vector with only 1 element by default.
         // if users want to customize the pixel data, they can call set_pixel_data
@@ -29,7 +29,7 @@ impl Sprite {
         }
     }
 
-    pub fn set_pixel_data(&mut self, data: Vec<colors::Color>) {
+    pub fn set_pixel_data(&mut self, data: Vec<pixels::Pixel>) {
         let data_len: i32 = data.len() as i32;
         if data_len > self.pixel_data_max_len {
             // instead of panicking, just give a console warning
@@ -59,20 +59,20 @@ impl Sprite {
 mod tests {
     #[test]
     fn new_works() {
-        let red = super::colors::Color::new(255, 0, 0, 255);
+        let red = super::pixels::Pixel::new(255, 0, 0, 255);
         super::Sprite::new(1, 1, 10, 10, &red);
     }
 
     #[test]
     fn only_has_one_pixel_value() {
-        let red = super::colors::Color::new(255, 0, 0, 255);
+        let red = super::pixels::Pixel::new(255, 0, 0, 255);
         let my_sprite = super::Sprite::new(20, 20, 10, 10, &red);
         assert_eq!(my_sprite.pixel_data.len(), 1);
     }
 
     #[test]
     fn set_pixel_data_doesnt_error_if_data_is_larger_than_pixel_data_max_len() {
-        let red = super::colors::Color::new(255, 0, 0, 255);
+        let red = super::pixels::Pixel::new(255, 0, 0, 255);
         let mut my_sprite = super::Sprite::new(0, 0, 1, 1, &red);
 
         my_sprite.set_pixel_data(vec![red; 5]);
@@ -83,7 +83,7 @@ mod tests {
 
     #[test]
     fn set_pixel_data_sets_len_to_max() {
-        let red = super::colors::Color::new(255, 0, 0, 255);
+        let red = super::pixels::Pixel::new(255, 0, 0, 255);
         let mut my_sprite = super::Sprite::new(0, 0, 3, 2, &red);
         assert_eq!(my_sprite.pixel_data.len(), 1);
         // max len = 3 * 2 = 6

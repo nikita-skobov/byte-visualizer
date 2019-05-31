@@ -71,7 +71,7 @@ pub fn get_image_data(
 
 pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, height: i32) -> Vec<u8> {
     let num_pixels = width * height;
-    let vector_size = num_pixels * super::colors::VALUES_PER_PIXEL;
+    let vector_size = num_pixels * super::pixels::VALUES_PER_PIXEL;
     let mut image_data: Vec<u8> = vec![0; vector_size as usize];
 
 
@@ -84,7 +84,7 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
         let mut height_offset = height_level * width;
         
         for i in 0..sprite.pixel_data_max_len {
-            let pixel_color: &super::colors::Color = if i > num_pixels_in_sprite { &sprite.pixel_data[0] } else { &first_pixel_color };
+            let pixel_color: &super::pixels::Pixel = if i > num_pixels_in_sprite { &sprite.pixel_data[0] } else { &first_pixel_color };
             // if user wants entire sprite to be a single colored square they can just supply one color
             // which would be first_pixel_color. otherwise if they ever call set_pixel_data, then
             // sprite.pixel_data.len() becomes set to sprite.pixel_data_max_len
@@ -115,7 +115,7 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
             }
 
             let pixel_index = height_offset + width_index;
-            let pixel_index = pixel_index * super::colors::VALUES_PER_PIXEL;
+            let pixel_index = pixel_index * super::pixels::VALUES_PER_PIXEL;
             let pixel_index: usize = pixel_index as usize;
 
             let bottom_pixel = (
@@ -137,7 +137,7 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
                 new_green,
                 new_blue,
                 new_alpha,
-            ) = super::colors::Color::get_blended_pixel_tuple(bottom_pixel, top_pixel);
+            ) = super::pixels::Pixel::get_blended_pixel_tuple(bottom_pixel, top_pixel);
 
             image_data[pixel_index] = new_red;
             image_data[pixel_index + 1] = new_green;
