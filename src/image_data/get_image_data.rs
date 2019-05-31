@@ -149,3 +149,31 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
 
     image_data
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn get_image_data_from_sprites_works() {
+        use std::fs;
+
+        let blue = super::super::pixels::Pixel::new(0, 0, 255, 255);
+        let yellow_transparent = super::super::pixels::Pixel::new(255, 255, 0, 125);
+
+        let blue_background = super::super::Sprite::new(0, 0, 3, 3, &blue);
+        let yellow_center = super::super::Sprite::new(1, 1, 1, 1, &yellow_transparent);
+
+        let sprite_list = vec![blue_background, yellow_center];
+
+        let image_data = super::get_image_data_from_sprites(sprite_list, 3, 3);
+
+        let expected_image_data = vec![0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 125, 125, 129, 255,0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255];
+
+        assert_eq!(image_data, expected_image_data);
+        // let mut file_handler = fs::File::create("plswork.png").unwrap();
+
+        // match png_encode_mini::write_rgba_from_u8(&mut file_handler, &image_data, 3, 3) {
+        //     Ok(_) => println!("Image written"),
+        //     Err(e) => println!("Error {:?}", e),
+        // }
+    }
+}
