@@ -9,7 +9,10 @@ fn main() {
     let (file_path, output_name) = helpers::get_args();
     let start = Instant::now();
     let binary_data = helpers::get_file_as_binary(&file_path);
-    println!("Time elapsed from loading file to memory: {:?}", start.elapsed());
+    println!(
+        "Time elapsed from loading file to memory: {:?}",
+        start.elapsed()
+    );
 
     let (width, height) = helpers::get_dimensions_from_len(binary_data.len() as f64);
     let mut file_handler = fs::File::create(output_name).unwrap();
@@ -19,7 +22,10 @@ fn main() {
     let total_width: i32 = width as i32 * pixel_size;
     let total_height: i32 = height as i32 * pixel_size;
 
-    println!("there will be {} new pixels and sprites created", binary_data.len());
+    println!(
+        "there will be {} new pixels and sprites created",
+        binary_data.len()
+    );
 
     let mut xoff = 0;
     let mut yoff = 0;
@@ -36,18 +42,31 @@ fn main() {
         }
     }
 
-    println!("Time elapsed from iterating through binary data: {:?}", start.elapsed());
-
-
-    let start = Instant::now();
-    let image_data = image_data::get_image_data_from_sprites(sprite_list, total_width, total_height);
-    println!("Time elapsed from generating u8 vector from image data: {:?}", start.elapsed());
-
+    println!(
+        "Time elapsed from iterating through binary data: {:?}",
+        start.elapsed()
+    );
 
     let start = Instant::now();
-    match image_data::write_rgba_from_u8(&mut file_handler, &image_data, total_width as u32, total_height as u32) {
+    let image_data =
+        image_data::get_image_data_from_sprites(sprite_list, total_width, total_height);
+    println!(
+        "Time elapsed from generating u8 vector from image data: {:?}",
+        start.elapsed()
+    );
+
+    let start = Instant::now();
+    match image_data::write_rgba_from_u8(
+        &mut file_handler,
+        &image_data,
+        total_width as u32,
+        total_height as u32,
+    ) {
         Ok(_) => println!("Image written"),
         Err(e) => println!("Error {:?}", e),
     }
-    println!("Time elapsed from writing image data to file: {:?}", start.elapsed());
+    println!(
+        "Time elapsed from writing image data to file: {:?}",
+        start.elapsed()
+    );
 }

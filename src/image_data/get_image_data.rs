@@ -68,13 +68,16 @@ pub fn get_image_data(
     image_data
 }
 
-pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, height: i32) -> Vec<u8> {
+pub fn get_image_data_from_sprites(
+    sprite_vec: Vec<super::Sprite>,
+    width: i32,
+    height: i32,
+) -> Vec<u8> {
     let num_pixels: i128 = width as i128 * height as i128;
     let pixels_per_row = width * super::pixels::VALUES_PER_PIXEL;
     let vector_size = num_pixels * super::pixels::VALUES_PER_PIXEL as i128;
     let zlib_vector_size = vector_size + width as i128;
     let mut image_data: Vec<u8> = vec![0; zlib_vector_size as usize];
-
 
     for sprite in sprite_vec {
         let num_pixels_in_sprite: i32 = sprite.pixel_data.len() as i32;
@@ -84,9 +87,13 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
         // - 1 because we want it to be 0 indexed
 
         let mut times_we_went_down_one_row = 0;
-        
+
         for i in 0..sprite.pixel_data_max_len {
-            let pixel_color: &super::pixels::Pixel = if i > num_pixels_in_sprite { &sprite.pixel_data[0] } else { &first_pixel_color };
+            let pixel_color: &super::pixels::Pixel = if i > num_pixels_in_sprite {
+                &sprite.pixel_data[0]
+            } else {
+                &first_pixel_color
+            };
             // if user wants entire sprite to be a single colored square they can just supply one color
             // which would be first_pixel_color. otherwise if they ever call set_pixel_data, then
             // sprite.pixel_data.len() becomes set to sprite.pixel_data_max_len
@@ -94,15 +101,12 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
             let width_offset = i % sprite.width;
             let width_index = sprite.x_offset + width_offset;
 
-
-
             if i > 0 && width_offset == 0 {
                 times_we_went_down_one_row += 1;
                 height_level -= 1;
                 // every time i surpasses the width, we decrease the
                 // height level by 1
             }
-
 
             if height_level < 0 || height_level >= height {
                 // height level must be less than image height and non negative
@@ -118,8 +122,9 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
 
             let current_height_level = sprite.y_offset + times_we_went_down_one_row;
             let zlib_offset = 1 + current_height_level as usize;
-            
-            let pixel_index = (current_height_level * pixels_per_row) + (width_index * super::pixels::VALUES_PER_PIXEL);
+
+            let pixel_index = (current_height_level * pixels_per_row)
+                + (width_index * super::pixels::VALUES_PER_PIXEL);
             let pixel_index: usize = pixel_index as usize;
 
             let bottom_pixel = (
@@ -136,12 +141,8 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
                 pixel_color.alpha,
             );
 
-            let (
-                new_red,
-                new_green,
-                new_blue,
-                new_alpha,
-            ) = super::pixels::Pixel::get_blended_pixel_tuple(bottom_pixel, top_pixel);
+            let (new_red, new_green, new_blue, new_alpha) =
+                super::pixels::Pixel::get_blended_pixel_tuple(bottom_pixel, top_pixel);
 
             image_data[pixel_index + zlib_offset] = new_red;
             image_data[pixel_index + zlib_offset + 1] = new_green;
@@ -153,7 +154,6 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
     image_data
 }
 
-
 // pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, height: i32) -> Vec<u8> {
 //     let num_pixels: i128 = width as i128 * height as i128;
 //     let pixels_per_row = width * super::pixels::VALUES_PER_PIXEL;
@@ -164,7 +164,6 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
 //     let mut image_data2: Vec<u8> = vec![0; zlib_vector_size as usize];
 //     image_data2[0] = 0;
 
-
 //     for sprite in sprite_vec {
 //         let num_pixels_in_sprite: i32 = sprite.pixel_data.len() as i32;
 //         let first_pixel_color = sprite.pixel_data[0].clone();
@@ -172,7 +171,7 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
 //         let mut height_level = height - sprite.y_offset - 1;
 //         // - 1 because we want it to be 0 indexed
 //         let mut height_offset = height_level * width;
-        
+
 //         for i in 0..sprite.pixel_data_max_len {
 //             let pixel_color: &super::pixels::Pixel = if i > num_pixels_in_sprite { &sprite.pixel_data[0] } else { &first_pixel_color };
 //             // if user wants entire sprite to be a single colored square they can just supply one color
@@ -182,7 +181,6 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
 //             let width_offset = i % sprite.width;
 //             let width_index = sprite.x_offset + width_offset;
 
-
 //             if i > 0 && width_offset == 0 {
 //                 height_level -= 1;
 //                 // every time i surpasses the width, we decrease the
@@ -190,7 +188,6 @@ pub fn get_image_data_from_sprites(sprite_vec: Vec<super::Sprite>, width: i32, h
 //                 height_offset = height_level * width;
 //                 // recalculate height offset only when height level changes
 //             }
-
 
 //             if height_level < 0 || height_level >= height {
 //                 // height level must be less than image height and non negative
@@ -263,7 +260,10 @@ mod tests {
 
         let image_data = super::get_image_data_from_sprites(sprite_list, 3, 3);
 
-        let expected_image_data = vec![0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 125, 125, 129, 255,0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255];
+        let expected_image_data = vec![
+            0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 125, 125, 129, 255, 0,
+            0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255,
+        ];
 
         assert_eq!(image_data, expected_image_data);
         // let mut file_handler = fs::File::create("plswork.png").unwrap();

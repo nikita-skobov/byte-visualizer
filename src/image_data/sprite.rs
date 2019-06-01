@@ -10,7 +10,13 @@ pub struct Sprite {
 }
 
 impl Sprite {
-    pub fn new(x_offset: i32, y_offset: i32, width: i32, height: i32, color: &pixels::Pixel) -> Sprite {
+    pub fn new(
+        x_offset: i32,
+        y_offset: i32,
+        width: i32,
+        height: i32,
+        color: &pixels::Pixel,
+    ) -> Sprite {
         let pixel_data = vec![color.clone()];
         // make a vector with only 1 element by default.
         // if users want to customize the pixel data, they can call set_pixel_data
@@ -35,7 +41,8 @@ impl Sprite {
         }
 
         let current_color = self.pixel_data[0].clone();
-        self.pixel_data.resize(self.pixel_data_max_len as usize, current_color);
+        self.pixel_data
+            .resize(self.pixel_data_max_len as usize, current_color);
 
         let mut index = 0;
         for color_value in data {
@@ -50,7 +57,6 @@ impl Sprite {
         }
     }
 }
-
 
 #[cfg(test)]
 mod tests {

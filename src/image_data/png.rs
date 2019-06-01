@@ -33,8 +33,8 @@ pub mod crc32 {
 
         pub fn update(&mut self, buf: &[u8]) {
             for &i in buf {
-                self.value = self.table[((self.value ^ (i as u32)) & 0xff) as usize] ^
-                            (self.value >> 8);
+                self.value =
+                    self.table[((self.value ^ (i as u32)) & 0xff) as usize] ^ (self.value >> 8);
             }
         }
 
@@ -94,12 +94,7 @@ mod adler32 {
 // big endian
 #[inline]
 fn u32_to_u8_be(v: u32) -> [u8; 4] {
-    [
-        (v >> 24) as u8,
-        (v >> 16) as u8,
-        (v >> 8) as u8,
-        v as u8,
-    ]
+    [(v >> 24) as u8, (v >> 16) as u8, (v >> 8) as u8, v as u8]
 }
 
 ///
@@ -140,7 +135,6 @@ mod fake_zlib {
             raw_data.extend(&[
                 // type
                 if is_last { 1 } else { 0 },
-
                 // size
                 (chunk_len & 0xff) as u8,
                 ((chunk_len >> 8) & 0xff) as u8,
@@ -158,7 +152,6 @@ mod fake_zlib {
         return raw_data;
     }
 }
-
 
 ///
 /// Write RGBA pixels to uncompressed PNG.
@@ -193,9 +186,9 @@ pub fn write_rgba_from_u8<W: ::std::io::Write>(
     {
         let wb = u32_to_u8_be(w);
         let hb = u32_to_u8_be(h);
-        let data = [wb[0], wb[1], wb[2], wb[3],
-                    hb[0], hb[1], hb[2], hb[3],
-                    8, 6, 0, 0, 0];
+        let data = [
+            wb[0], wb[1], wb[2], wb[3], hb[0], hb[1], hb[2], hb[3], 8, 6, 0, 0, 0,
+        ];
         png_pack(file, b"IHDR", &data)?;
     }
 
