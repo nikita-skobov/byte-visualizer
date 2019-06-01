@@ -1,5 +1,3 @@
-extern crate png_encode_mini;
-
 use std::fs;
 
 mod helpers;
@@ -7,7 +5,6 @@ mod image_data;
 
 fn main() {
     use std::time::{Duration, Instant};
-
 
     let (file_path, output_name) = helpers::get_args();
     let start = Instant::now();
@@ -17,7 +14,7 @@ fn main() {
     let (width, height) = helpers::get_dimensions_from_len(binary_data.len() as f64);
     let mut file_handler = fs::File::create(output_name).unwrap();
 
-    let pixel_size = 10;
+    let pixel_size = 2;
     let mut sprite_list: Vec<image_data::Sprite> = Vec::new();
     let total_width: i32 = width as i32 * pixel_size;
     let total_height: i32 = height as i32 * pixel_size;
@@ -48,7 +45,7 @@ fn main() {
 
 
     let start = Instant::now();
-    match png_encode_mini::write_rgba_from_u8(&mut file_handler, &image_data, total_width as u32, total_height as u32) {
+    match image_data::write_rgba_from_u8(&mut file_handler, &image_data, total_width as u32, total_height as u32) {
         Ok(_) => println!("Image written"),
         Err(e) => println!("Error {:?}", e),
     }
