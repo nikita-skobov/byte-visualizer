@@ -1,3 +1,14 @@
+// this file was taken from the png-encode-mini crate
+// https://crates.io/crates/png_encode_mini
+// it is used because it provides a very simple way of writing PNG files.
+// two modifications were made by me:
+// removing the unecessary function: write_rgba_from_u32
+// and removing a loop that created a deep copy of the image data.
+// source code can be found:
+// https://github.com/ideasman42/png-encode-mini-rs
+
+// Licensed: Apache 2.0
+
 pub mod crc32 {
     // https://github.com/ledbettj/crc32/blob/master/rust/src/crc32.rs
     pub struct Crc32 {
